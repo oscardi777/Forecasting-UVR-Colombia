@@ -1,0 +1,25 @@
+# ---- Archivos de datos pesados (generados, >100MB rechazados por GitHub) ----
+pronosticosActivos/trayectorias_mensuales.npz
+pronosticosActivos/trayectorias_mensuales_Bono.csv
+pronosticosActivos/trayectorias_mensuales_ETF.csv
+pronosticosActivos/trayectorias_mensuales_Fondo.csv
+
+# Ignorar cualquier .npz grande y trayectorias por nombre
+*.npz
+pronosticosActivos/trayectorias_mensuales_*.csv
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# ---- Entornos virtuales ----
+venv/
+.venv/
+env/
+
+# ---- Sistema operativo / editor ----
+.DS_Store
+Thumbs.db
+.vscode/
