@@ -1,0 +1,504 @@
+\documentclass[10pt]{beamer}
+
+% Tema elegante y académico
+\usetheme{Madrid}
+\usecolortheme{default}
+
+% Paquetes útiles
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+% Información de la portada
+\title[Grupo 2]{Proyecto Final: Titulo en construccion}
+\author{Jeronimo Gil - Isaac - Oscar Díaz}
+\institute{Universidad EAFIT}
+\date{\today}
+
+\begin{document}
+
+%------------------------------------------------
+% Portada
+%------------------------------------------------
+\begin{frame}
+\titlepage
+\end{frame}
+
+%------------------------------------------------
+% Índice
+%------------------------------------------------
+\begin{frame}{Contenido}
+\tableofcontents
+\end{frame}
+
+
+%------------------------------------------------
+\section{Primer Ejercicio}
+%------------------------------------------------
+
+\subsection{Descripcion del Ejercicio}
+\begin{frame}{Descripcion del Ejercicio}
+
+Ejercicio 5:
+
+La empresa relojera Kronos invirtió hace 3 años 2.000.000 de francos suizos (CHF) en una subsidiaria en Brasil. La tasa obtenida de rendimiento de la inversión en reales brasileros (BRL) es del 16\(\%\) ASV (Anual Semestre Vencido). Calcule la rentabilidad anual efectiva en francos suizos y la cantidad de francos suizos obtenidos al final del tercer año.
+
+Al momento de la inversion, las tasas de cambio eran las siguientes:
+\begin{itemize}
+    \item TC CHF/USD = 0.9687 
+
+    \item TC BRL/USD = 4.06275
+\end{itemize}
+
+Hoy las tasas de cambio son:
+
+\begin{itemize}
+    \item TC CHF/USD = 0.92447 
+
+    \item TC BRL/USD = 5.32004
+\end{itemize}
+
+\end{frame}
+
+\subsection{Resultados}
+
+
+\subsection{Resultados}
+
+%------------------------------------------------
+\begin{frame}{Inversión Internacional Kronos (Parte 1)}
+
+\small
+
+\begin{columns}[T,onlytextwidth]
+
+% COLUMNA IZQUIERDA
+\begin{column}{0.48\textwidth}
+
+\textbf{Datos del problema}
+
+\begin{itemize}
+    \item Inversión inicial: \(C_0=2\,000\,000\) CHF.
+    \item Plazo: \(n=3\) años.
+    \item Rentabilidad en Brasil: \(i_{ASV}=16\%\).
+\end{itemize}
+
+
+\begin{table}
+\centering
+\footnotesize
+\begin{tabular}{lcc}
+\hline
+\textbf{Tasa} & \textbf{Inicial} & \textbf{Final}\\
+\hline
+CHF/USD & 0.9687 & 0.92447\\
+BRL/USD & 4.06275 & 5.32004\\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{1. Tasa efectiva anual en BRL}
+
+Como la tasa es anual semestre vencido:
+
+\[
+i_{BRL}=
+\left(1+\frac{0.16}{2}\right)^2-1
+\]
+
+\[
+\boxed{i_{BRL}=16.64\%}
+\]
+
+\end{column}
+
+% COLUMNA DERECHA
+\begin{column}{0.48\textwidth}
+
+\textbf{2. Tasa de cambio CHF/BRL}
+
+Se divide la tasa CHF/USD entre la tasa BRL/USD:
+
+\[
+TC_0=\frac{0.9687}{4.06275}
+\]
+
+\[
+TC_0\approx 0.2384
+\]
+
+\vspace{-0.2cm}
+
+\[
+TC_3=\frac{0.92447}{5.32004}
+\]
+
+\[
+TC_3\approx 0.1738
+\]
+
+\end{column}
+
+\end{columns}
+
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}{Inversión Internacional Kronos (Parte 2)}
+
+\small
+
+\begin{columns}[T,onlytextwidth]
+
+% COLUMNA IZQUIERDA
+\begin{column}{0.48\textwidth}
+
+\textbf{3. Variación de la tasa de cambio}
+
+La variación acumulada durante los tres años es:
+
+\[
+\operatorname{Var}_{CHF/BRL}
+=\frac{TC_3}{TC_0}-1
+\approx -27.10\%
+\]
+
+La variación anual efectiva es:
+
+\[
+i_{TC}=
+(1+\operatorname{Var}_{CHF/BRL})^{1/3}-1
+\approx -10.01\%
+\]
+
+
+\end{column}
+
+% COLUMNA DERECHA
+\begin{column}{0.48\textwidth}
+
+\textbf{4. Rentabilidad efectiva anual en CHF}
+
+Se combina la rentabilidad en reales con la variación de la tasa de cambio:
+ 
+\[
+\boxed{i_{CHF}=(1+i_{BRL})(1+i_{TC})-1 \approx 4.97\%}
+\]
+
+\textbf{5. Capitalización de la inversión}
+
+El capital final después de tres años es:
+
+\[
+\boxed{C_3=C_0(1+i_{CHF})^3\approx 2\,313\,029.93\ \text{CHF}}
+\]
+
+Rentabilidad efectiva anual:
+
+\[
+\boxed{i_{CHF}\approx 4.97\%}
+\]
+
+
+\end{column}
+
+\end{columns}
+
+\end{frame}
+
+\subsection{Discusion}
+\begin{frame}{Decrecimiento de la tasa de cambio CHF/BRL}
+\centering
+\includegraphics[width=0.92\textwidth]{images/plot1_tc_chf_brl.png}
+\end{frame}
+
+\begin{frame}{Capitalización BRL vs CHF}
+\centering
+\includegraphics[width=0.92\textwidth]{images/plot2_capitalizacion.png}
+\end{frame}
+
+%------------------------------------------------
+\section{Segundo Ejercicio}
+%------------------------------------------------
+
+\subsection{Descripcion del Ejercicio}
+\begin{frame}{Descripcion del Ejercicio}
+
+Ejercicio 6:
+
+La empresa mexicana ”Tumex” esta comprando una mina de caliza en Peru por valor de USD (dolares) 200 Millones. La empresa cuenta con USD 30 millones y el resto lo debe financiar con el sistema financiero a un plazo de 6 anos. Tiene 3 alternativas:
+
+\begin{itemize}
+    \item El banco INCA le presta al 10\(\%\) en PEN (nuevos soles peruanos).
+    \item El banco AZTECA le presta en MXN (nuevos pesos mexicanos) al 12\(\%\).
+    \item El banco APACHE le presta al 6\(\%\) en USD.
+\end{itemize}
+
+Las tasas de cambio al momento del desembolso son:
+\begin{itemize}
+    \item PEN/USD = 3.50
+    \item MXN/USD = 22.30
+\end{itemize}
+
+La variacion esperada del tipo de cambio es:
+
+\begin{itemize}
+    \item PEN/USD = 5.5\(\%\) anual.
+    \item MXN/USD = 7\(\%\) anual.
+\end{itemize}
+
+\textit{¿Cual es la alternativa mas barata y cuanto es su costo financiero en la moneda de la empresa, que es el MXN?}
+
+\end{frame}
+
+
+\subsection{Resultados}
+
+%------------------------------------------------
+\begin{frame}{Financiamiento Internacional (Parte 1)}
+
+\small
+
+\begin{columns}[T,onlytextwidth]
+
+\begin{column}{0.48\textwidth}
+
+\textbf{1. Datos del problema}
+
+\begin{itemize}
+    \item Valor de la mina: USD 200 millones.
+    \item Recursos propios: USD 30 millones.
+    \item Deuda: USD 170 millones a 6 años.
+\end{itemize}
+
+\textbf{Tasas de cambio iniciales}
+
+\[
+TC_{\text{PEN/USD}}=3.50,\qquad
+TC_{\text{MXN/USD}}=22.30
+\]
+
+\textbf{2. Tasa de cambio cruzada}
+
+\[
+TC_{\text{MXN/PEN},0}=\frac{22.30}{3.50}
+\]
+
+\[
+\boxed{TC_{\text{MXN/PEN},0}=6.3714}
+\]
+
+\end{column}
+
+\begin{column}{0.48\textwidth}
+
+\textbf{3. Tasas de cambio al año 1}
+
+Con variaciones esperadas del \(5.5\%\) en PEN/USD y \(7\%\) en MXN/USD:
+
+\[
+TC_{\text{PEN/USD},1}=3.50(1.055)=3.6925
+\]
+
+\[
+TC_{\text{MXN/USD},1}=22.30(1.07)=23.861
+\]
+
+Por tanto:
+
+\[
+TC_{\text{MXN/PEN},1}=\frac{23.861}{3.6925}
+\]
+
+\[
+\operatorname{Var}_{\text{MXN/PEN}}
+=\frac{TC_1}{TC_0}-1
+\]
+
+\[
+\boxed{\operatorname{Var}_{\text{MXN/PEN}}=1.42\%}
+\]
+
+\end{column}
+
+\end{columns}
+
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}{Financiamiento Internacional (Parte 2)}
+
+\small
+
+\begin{columns}[T,onlytextwidth]
+
+\begin{column}{0.48\textwidth}
+
+\textbf{4. Costo financiero en MXN}
+
+Para el banco INCA, la tasa del \(10\%\) en PEN se ajusta por la variación cambiaria:
+
+\[
+i_{\text{INCA}}=(1+0.10)(1+0.0142)-1
+\]
+
+\[
+\boxed{i_{\text{INCA}}=11.56\%}
+\]
+
+El banco AZTECA presta directamente en MXN al \(12\%\) E.A.:
+
+\[
+\boxed{i_{\text{AZTECA}}=12\%}
+\]
+
+\end{column}
+
+\begin{column}{0.48\textwidth}
+
+Para el banco APACHE, la tasa del \(6\%\) en USD se ajusta por la variación del \(7\%\) del MXN/USD:
+
+\[
+i_{\text{APACHE}}=(1+0.06)(1+0.07)-1
+\]
+
+\[
+\boxed{i_{\text{APACHE}}=13.42\%}
+\]
+
+\textbf{5. Comparación y decisión}
+
+\begin{table}
+\centering
+\footnotesize
+\begin{tabular}{lc}
+\hline
+\textbf{Banco} & \textbf{Costo E.A. en MXN}\\
+\hline
+INCA & \(11.56\%\)\\
+AZTECA & \(12.00\%\)\\
+APACHE & \(13.42\%\)\\
+\hline
+\end{tabular}
+\end{table}
+
+\[
+\boxed{\text{Alternativa más barata: INCA}}
+\]
+
+\end{column}
+
+\end{columns}
+
+\end{frame}
+
+%------------------------------------------------
+\section{Tercer Ejercicio}
+%------------------------------------------------
+
+\subsection{Descripcion del Ejercicio}
+
+\begin{frame}{Descripcion del Ejercicio}
+
+\small
+
+\textbf{Objetivo:} Diseñar una estrategia de inversión que permita cubrir las cuotas mensuales y los abonos extraordinarios de un crédito en UVR, utilizando un capital inicial de \$760.000.000 COP.
+
+\textbf{Condiciones del crédito}
+
+\begin{itemize}
+    \item \textbf{Monto:} 1.000.000 UVR.
+    \item \textbf{Plazo:} 120 meses (10 años).
+    \item \textbf{Tasa de interés:} UVR + 10\% E.A.
+    \item \textbf{Amortización:} Cuotas fijas mensuales en UVR.
+    \item \textbf{Período de gracia:} 3 años.
+    \item \textbf{Abonos extraordinarios programados:}
+    \begin{itemize}
+        \item Final del año 4: 50.000 UVR.
+        \item Final del año 5: 50.000 UVR.
+    \end{itemize}
+\end{itemize}
+
+\textbf{Consideración adicional:} Estimar la inflación durante la vigencia del crédito, dado que la UVR está indexada a esta variable.
+
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}{Descripcion del Ejercicio}
+\small
+El capital inicial debe distribuirse entre los siguientes activos para generar los recursos necesarios para cubrir las obligaciones del crédito.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{|p{3.7cm}|p{3.9cm}|p{3.5cm}|}
+\hline
+\centering\textbf{Activo} & 
+\centering\textbf{Rentabilidad anual esperada} & 
+\centering\textbf{Liquidez} \tabularnewline
+\hline
+Bono corporativo & 
+\centering 7\% -- 10\% & 
+Baja (vence en 3 años) \tabularnewline
+\hline
+Fondo de inversión conservador & 
+\centering 4\% -- 6\% & 
+Media (rescate en 30 días) \tabularnewline
+\hline
+ETF de renta variable & 
+\centering 8\% -- 15\% & 
+Alta \tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Problema:} Determinar una estrategia de inversión que permita administrar el capital inicial de \$760.000.000 COP, considerando la rentabilidad, la liquidez y las obligaciones del crédito durante los 10 años.
+\end{frame}
+
+
+%------------------------------------------------
+\subsection{Metodologia}
+%------------------------------------------------
+\begin{frame}{Metodología}
+
+\end{frame}
+
+%------------------------------------------------
+\subsection{Resultados}
+%------------------------------------------------
+
+\begin{frame}{Resultados}
+
+\end{frame}
+
+
+%------------------------------------------------
+\subsection{Discusion}
+%------------------------------------------------
+
+\begin{frame}{Discusion}
+    
+\end{frame}
+
+
+\section{Referencias}
+\begin{frame}{Referencias}
+\begin{thebibliography}{99}
+
+\bibitem{nawaz1983}
+Nawaz, M., Enscore, E. E., \& Ham, I. (1983).
+\newblock A heuristic algorithm for the $m$-machine, $n$-job flow-shop 
+sequencing problem.
+\newblock \textit{Omega}, 11(1), 91--95.
+
+\bibitem{feo1989}
+Feo, T. A., \& Resende, M. G. C. (1989).
+\newblock A probabilistic heuristic for a computationally difficult set 
+covering problem.
+\newblock \textit{Operations Research Letters}, 8(2), 67--71.
+
+\end{thebibliography}
+\end{frame}
+
+\end{document}
