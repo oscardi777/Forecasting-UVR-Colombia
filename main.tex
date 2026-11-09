@@ -460,25 +460,392 @@ Alta \tabularnewline
 %------------------------------------------------
 \subsection{Metodologia}
 %------------------------------------------------
-\begin{frame}{Metodología}
 
+%------------------------------------------------
+\begin{frame}{Metodología — Secuencia de solución}
+\small
+El ejercicio se resuelve de forma \textbf{secuencial}:
+
+\begin{enumerate}
+    \item \textbf{Plan de amortización en UVR:} calcular la cuota fija en UVR,
+          aplicar el periodo de gracia y los abonos extraordinarios.
+    \item \textbf{Proyección de la UVR} con \textbf{MBG} y \textbf{SARIMAX}
+          para convertir cada cuota/abono a pesos \(\rightarrow\) serie \(L_t\).
+    \item \textbf{Simulación de activos} (Bono, Fondo, ETF) y estimación de \(\mu\), \(\Sigma\).
+    \item \textbf{Optimización Markowitz multiperiodo} sujeta a riesgo y liquidez.
+    \item \textbf{Análisis de shortfall} sobre trayectorias Monte Carlo,
+          contrastando los flujos \(L_t\) de MBG y SARIMAX.
+\end{enumerate}
+
+\vspace{0.2cm}
+\begin{center}
+\textit{Sin el plan de pagos en UVR no existe el pasivo \(L_t\) que el portafolio debe cubrir.}
+\end{center}
+\end{frame}
+
+
+%------------------------------------------------
+\begin{frame}{Paso 1 — Plan de amortización en UVR}
+\small
+Condiciones del crédito y cálculo de la cuota fija en UVR:
+
+\begin{itemize}
+    \item Capital: \(C = 1\,000\,000\) UVR; plazo \(n=120\) meses.
+    \item Tasa: UVR \(+\,10\%\) E.A. \(\Rightarrow\)
+          \(i_m = (1{,}10)^{1/12}-1 \approx 0{,}7974\%\) E.M.
+    \item Periodo de gracia: 36 meses con \textbf{cuota \(= 0\)} (el interés se capitaliza).
+    \item Abonos extraordinarios: \(50\,000\) UVR en los periodos 48 y 60.
+\end{itemize}
+
+\vspace{0.1cm}
+La cuota fija sobre el saldo al salir de la gracia (y descontando el valor presente
+de los abonos) resulta:
+
+\[
+A \approx 20\,379{,}53\ \text{UVR}
+\]
+
+En los meses 48 y 60 la salida en UVR es \(A + 50\,000 \approx 70\,379{,}53\) UVR.
+Este perfil de pagos en UVR es \textbf{determinístico}; la incertidumbre entra al
+convertirlo a pesos con la trayectoria de la UVR.
+\end{frame}
+
+
+%------------------------------------------------
+\begin{frame}{Paso 2 — De cuotas UVR a flujo en pesos \(L_t\)}
+\small
+Cada cuota (o abono) en UVR se convierte a COP con la UVR proyectada del mes \(t\):
+
+\[
+L_t = \underbrace{Q_t^{\text{UVR}}}_{\text{plan de amortización}}
+      \times \underbrace{\mathrm{UVR}_t}_{\text{MBG o SARIMAX}}
+\]
+
+\begin{itemize}
+    \item \textbf{SARIMAX:} captura dinámica de corto plazo y exógenas (IPC/TRM).
+    \item \textbf{MBG:} proyección estocástica de largo plazo de la UVR.
+\end{itemize}
+
+\vspace{0.15cm}
+Resultado: dos series de pasivo en pesos,
+\(L_t^{\text{MBG}}\) y \(L_t^{\text{SARIMAX}}\),
+que alimentan el ALM y el análisis de shortfall.
+
+\end{frame}
+
+
+%------------------------------------------------
+\begin{frame}{Paso 3 — Modelos de proyección de la UVR}
+\small
+Para obtener \(\mathrm{UVR}_t\) en (2) se usan dos modelos:
+
+\vspace{0.1cm}
+\textbf{SARIMAX}
+\begin{itemize}
+    \item Estacionariedad, órdenes \((p,d,q)\times(P,D,Q)_s\).
+    \item Exógenas IPC/TRM (indexación inflacionaria).
+\end{itemize}
+
+\textbf{MBG}
+\begin{equation*}
+S_{t+\Delta t}=S_t\exp\Bigl(\bigl(\mu-\tfrac12\sigma^2\bigr)\Delta t+\sigma\sqrt{\Delta t}\,Z\Bigr)
+\end{equation*}
+\begin{itemize}
+    \item \(\mu\), \(\sigma\) estimados en la serie histórica de la UVR.
+\end{itemize}
+
+Ambos generan las trayectorias que, multiplicadas por \(Q_t^{\mathrm{UVR}}\), producen \(L_t^{\mathrm{MBG}}\) y \(L_t^{\mathrm{SARIMAX}}\).
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}{Paso 4 — Simulación de los activos financieros}
+\small
+Para cada activo se generan \(K\) trayectorias diarias de 10 años con un proceso de Wiener
+escalado y \textbf{acotado} dentro de los rangos de rentabilidad:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Activo} & \textbf{Rango anual} & \textbf{Liquidez} \\
+\hline
+Bono corporativo & \(7\%{-}10\%\) & Baja (vence en 3 años) \\
+Fondo conservador & \(4\%{-}6\%\) & Media (rescate 30 días) \\
+ETF renta variable & \(8\%{-}15\%\) & Alta \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.15cm}
+\textbf{Procedimiento:}
+\begin{enumerate}
+    \item Simulación diaria (Wiener + clipping al rango).
+    \item Agregación a retornos mensuales compuestos: \(r_m=\prod(1+r_d)-1\).
+    \item Estimación de parámetros de Markowitz:
+    \[
+    \mu=\mathbb{E}[r_m],\qquad \Sigma=\mathrm{Cov}(r_m).
+    \]
+\end{enumerate}
+\end{frame}
+
+
+%------------------------------------------------
+\begin{frame}{Paso 5 — Portafolio Markowitz y análisis de shortfall}
+\small
+\textbf{Optimización multiperiodo} (escala mensual):
+\begin{equation*}
+\begin{aligned}
+\max_{w}\quad & w^\top\mu \\
+\text{s.a.}\quad
+& w^\top\Sigma\,w \le \sigma_{\max}^2,\;
+\sum_i w_i = 1,\; w_i\ge 0,\;
+w_{\text{Fondo}}+w_{\text{ETF}}\ge\beta.
+\end{aligned}
+\end{equation*}
+
+\begin{itemize}
+    \item P1--P3 (meses 1--108): \{Bono, Fondo, ETF\}
+    \item P4 (meses 109--120): \{Fondo, ETF\} \quad\textit{(el bono ya venció)}
+\end{itemize}
+
+Dinámica del valor:
+\[
+V_t = V_{t-1}\,(1+w^\top\mu) - L_t
+\]
+
+\vspace{0.1cm}
+\textbf{Evaluación de riesgo:} se propagan \(K\) trayectorias de retornos con los pesos óptimos
+y se calculan probabilidad de shortfall, Expected Shortfall y la distribución de \(V_{120}\),
+para los flujos \textbf{MBG} y \textbf{SARIMAX}.
 \end{frame}
 
 %------------------------------------------------
 \subsection{Resultados}
 %------------------------------------------------
 
-\begin{frame}{Resultados}
+%------------------------------------------------
+\begin{frame}{Resultados — Plan de pagos en UVR}
+\small
+Hitos del plan de amortización (unidad: UVR):
 
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{lrr}
+\hline
+\textbf{Momento} & \textbf{Cuota (UVR)} & \textbf{Saldo final (UVR)} \\
+\hline
+Meses 1--36 (gracia)     & \(0\)           & \(\approx 1\,331\,000\) \\
+Mes 37 (inicia cuota)    & \(20\,379{,}53\)& \(\approx 1\,321\,234\) \\
+Mes 48 (+ abono 50\,000) & \(70\,379{,}53\)& \(\approx 1\,158\,530\) \\
+Mes 60 (+ abono 50\,000) & \(70\,379{,}53\)& \(\approx 968\,812\) \\
+Mes 120 (última cuota)   & \(20\,379{,}53\)& \(0\) \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.2cm}
+\begin{itemize}
+    \item Durante la gracia el saldo crece por capitalización de intereses.
+    \item La cuota fija \(A \approx 20\,379{,}53\) UVR amortiza el crédito en los 84 meses restantes,
+          incorporando los dos abonos extraordinarios.
+\end{itemize}
 \end{frame}
 
+
+%------------------------------------------------
+\begin{frame}{Resultados — Cuotas en COP según UVR proyectada}
+\small
+Al multiplicar el plan en UVR por cada trayectoria de UVR se obtiene el pasivo en pesos:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{lrr}
+\hline
+\textbf{Indicador} & \textbf{MBG} & \textbf{SARIMAX} \\
+\hline
+Cuota típica post-gracia (ej. mes 37) & \(\approx \$9{,}13\) M & \(\approx \$8{,}94\) M \\
+Cuota con abono (mes 48)              & \(\approx \$33{,}2\) M & \(\approx \$32{,}3\) M \\
+Cuota con abono (mes 60)              & \(\approx \$35{,}1\) M & \(\approx \$33{,}8\) M \\
+\textbf{Total pagado (10 años)}       & \(\approx \$986{,}7\) M & \(\approx \$926{,}6\) M \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.15cm}
+SARIMAX proyecta una UVR algo más baja en el horizonte \(\Rightarrow\) pasivo total menor.
+Ambas series \(L_t\) son las que enfrenta el portafolio en el ALM y en el shortfall.
+\end{frame}
+
+\begin{frame}{Resultados — Parámetros del modelo}
+\small
+\textbf{Retornos esperados} (estimados a partir de las trayectorias Wiener):
+
+\begin{center}
+\begin{tabular}{lcc}
+\hline
+\textbf{Activo} & \(\mu\) mensual & \(\mu\) anual \\
+\hline
+Bono corporativo   & \(0{,}672\%\) & \(8{,}37\%\) \\
+Fondo conservador  & \(0{,}402\%\) & \(4{,}93\%\) \\
+ETF renta variable & \(0{,}896\%\) & \(11{,}29\%\) \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.2cm}
+\textbf{Restricciones:}
+\begin{itemize}
+    \item \(C_0 = \$760\,000\,000\) COP
+    \item \(\sigma_{\text{anual}} \le 8\%\) \(\Rightarrow\) \(\sigma_{\text{mensual}} \le 2{,}31\%\)
+    \item Liquidez mínima: \(w_{\text{Fondo}}+w_{\text{ETF}}\ge 30\%\)
+    \item \(w_i\ge 0\), \(\sum w_i=1\)
+\end{itemize}
+\end{frame}
+
+
+%------------------------------------------------
+\begin{frame}{Resultados — Composición óptima del portafolio}
+\centering
+\includegraphics[width=0.92\textwidth]{images/alm_pesos_por_periodo.png}
+
+\vspace{0.15cm}
+\small
+Dada la baja volatilidad simulada de los activos, el tope de riesgo no es vinculante y la solución
+se concentra en el activo de mayor retorno esperado (ETF), respetando la restricción de liquidez.
+\end{frame}
+
+
+%------------------------------------------------
+\begin{frame}{Resultados — Evolución determinista (MBG vs SARIMAX)}
+\centering
+\includegraphics[width=0.95\textwidth]{images/alm_evolucion_determinista_mbg_sarimax.png}
+
+\vspace{0.1cm}
+\small
+\begin{center}
+\begin{tabular}{lrr}
+\hline
+ & \textbf{MBG} & \textbf{SARIMAX} \\
+\hline
+Total pagado del pasivo & \$986{,}7 M & \$926{,}6 M \\
+Residual (mes 120)      & \$771{,}4 M & \$851{,}5 M \\
+Estado                  & Solvente   & Solvente \\
+\hline
+\end{tabular}
+\end{center}
+\end{frame}
+
+
+%------------------------------------------------
+\begin{frame}{Resultados — Robustez Monte Carlo (flujo MBG)}
+\centering
+\includegraphics[width=0.95\textwidth]{images/alm_percentiles_mbg.png}
+
+\vspace{0.1cm}
+\small
+\begin{itemize}
+    \item \(K\) trayectorias; banda p5--p95 siempre por encima de cero.
+    \item Probabilidad de shortfall: \(\mathbf{0\%}\).
+    \item Residual simulado (aprox.): media \(\approx\$771\) M; p5 \(\approx\$732\) M.
+\end{itemize}
+\end{frame}
+
+
+%------------------------------------------------
+\begin{frame}{Resultados — Robustez Monte Carlo (flujo SARIMAX)}
+\centering
+\includegraphics[width=0.95\textwidth]{images/alm_percentiles_sarimax.png}
+
+\vspace{0.1cm}
+\small
+\begin{itemize}
+    \item El pasivo proyectado por SARIMAX es menor \(\Rightarrow\) residual más alto.
+    \item Probabilidad de shortfall: \(\mathbf{0\%}\).
+    \item Residual simulado (aprox.): media \(\approx\$852\) M; p5 \(\approx\$811\) M.
+\end{itemize}
+\end{frame}
+
+
+%------------------------------------------------
+\begin{frame}{Resultados — Distribución del capital residual final}
+\centering
+\includegraphics[width=0.95\textwidth]{images/alm_hist_residual_mbg_sarimax.png}
+
+\vspace{0.1cm}
+\small
+En ambos pronósticos de UVR la masa de la distribución de \(V_{120}\) está claramente
+por encima de cero: el plan de inversión es \textbf{robusto} ante la incertidumbre de mercado.
+\end{frame}
+
+
+%------------------------------------------------
+\begin{frame}{Resultados — Comparación MBG vs SARIMAX}
+\centering
+\includegraphics[width=0.85\textwidth]{images/alm_comparacion_residuales.png}
+
+\vspace{0.15cm}
+\small
+\begin{center}
+\begin{tabular}{lcc}
+\hline
+\textbf{Métrica} & \textbf{MBG} & \textbf{SARIMAX} \\
+\hline
+Prob. shortfall     & \(0\%\) & \(0\%\) \\
+Residual p5         & \(\approx\$732\) M & \(\approx\$811\) M \\
+Residual mediana    & \(\approx\$771\) M & \(\approx\$851\) M \\
+\hline
+\end{tabular}
+\end{center}
+\end{frame}
 
 %------------------------------------------------
 \subsection{Discusion}
 %------------------------------------------------
 
-\begin{frame}{Discusion}
-    
+\begin{frame}{Discusión}
+\small
+\begin{enumerate}
+    \item \textbf{Plan de pagos:} la cuota cuota fija en UVR
+    (\(\approx 20\,379{,}53\)), con gracia sin pago y abonos en 48 y 60,
+    define un pasivo determinístico en UVR. La incertidumbre entra solo al
+    pasarlo a pesos con MBG y SARIMAX.
+
+    \item \textbf{Pasivo en COP:} SARIMAX implica un total pagado menor
+    (\(\approx \$926{,}6\) M) que MBG (\(\approx \$986{,}7\) M). En ambos casos
+    el capital inicial de \$760 M, invertido de forma óptima, cubre el flujo
+    y deja residual positivo.
+
+    \item \textbf{Portafolio:} bajo la \(\Sigma\) simulada el tope de riesgo
+    apenas aprieta y la solución se concentra en el ETF. En una calibración
+    con volatilidades de mercado el bono y el fondo tendrían más peso;
+    la restricción de liquidez y el vencimiento del bono a 3 años siguen siendo
+    las anclas de negocio correctas.
+
+    \item \textbf{Shortfall:} probabilidad \(0\%\) en MBG y en SARIMAX;
+    el percentil 5 de \(V_{120}\) permanece holgadamente positivo.
+    El plan es robusto ante la incertidumbre de la UVR y de los retornos.
+\end{enumerate}
+\end{frame}
+
+
+\begin{frame}{Conclusión del ejercicio ALM}
+\small
+\begin{center}
+\fbox{\parbox{0.92\textwidth}{\centering
+Partiendo del plan de amortización en UVR, convertido a pesos con MBG y SARIMAX,
+el portafolio Markowitz multiperiodo cubre íntegramente las cuotas y los abonos
+extraordinarios a 10 años, con residual esperado positivo y sin evidencia de
+shortfall en las simulaciones realizadas.
+}}
+\end{center}
+
+\vspace{0.35cm}
+\textbf{Aportes del ejercicio}
+\begin{itemize}
+    \item Integración pasivo (UVR) -- activo (Markowitz) en un mismo marco ALM.
+    \item Uso de dos proyecciones de UVR para contrastar sensibilidad del plan.
+    \item Evaluación no solo en media, sino en distribución (percentiles y shortfall).
+\end{itemize}
 \end{frame}
 
 
@@ -486,17 +853,10 @@ Alta \tabularnewline
 \begin{frame}{Referencias}
 \begin{thebibliography}{99}
 
-\bibitem{nawaz1983}
-Nawaz, M., Enscore, E. E., \& Ham, I. (1983).
-\newblock A heuristic algorithm for the $m$-machine, $n$-job flow-shop 
-sequencing problem.
-\newblock \textit{Omega}, 11(1), 91--95.
-
-\bibitem{feo1989}
-Feo, T. A., \& Resende, M. G. C. (1989).
-\newblock A probabilistic heuristic for a computationally difficult set 
-covering problem.
-\newblock \textit{Operations Research Letters}, 8(2), 67--71.
+\bibitem{barriga2021}
+Barriga Manrique, E. (2021).
+\newblock \textit{Matemáticas financieras}.
+\newblock Notas de clase no publicadas, Departamento de Finanzas, Universidad EAFIT.
 
 \end{thebibliography}
 \end{frame}
