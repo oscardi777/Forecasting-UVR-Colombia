@@ -16,7 +16,7 @@ Markowitz multiperiodo y se somete a un análisis de riesgo (shortfall) por Mont
 
 - Oscar Andrés Díaz González
 - Jerónimo Gil Giraldo
-- Issac
+- Isaac Uribe
 
 ---
 
